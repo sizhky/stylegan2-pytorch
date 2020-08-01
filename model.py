@@ -478,12 +478,17 @@ class Generator(nn.Module):
         inject_index=None,
         truncation=1,
         truncation_latent=None,
-        input_is_latent=False,
+        input_is_latent=True,
         noise=None,
         randomize_noise=True,
+        coarse_latents=None,
+        middle_latents=None,
+        fine_latents=None
     ):
+        from torch_snippets import inspect
         if not input_is_latent:
             styles = [self.style(s) for s in styles]
+            inspect(*styles)
 
         if noise is None:
             if randomize_noise:
@@ -508,7 +513,6 @@ class Generator(nn.Module):
 
             if styles[0].ndim < 3:
                 latent = styles[0].unsqueeze(1).repeat(1, inject_index, 1)
-
             else:
                 latent = styles[0]
 
@@ -520,7 +524,15 @@ class Generator(nn.Module):
             latent2 = styles[1].unsqueeze(1).repeat(1, self.n_latent - inject_index, 1)
 
             latent = torch.cat([latent, latent2], 1)
-
+        if coarse_latents is not None:
+            assert coarse_latents.shape[1:] == (4,self.style_dim), coarse_latents.shape
+            latent[:,:4] = coarse_latents
+        if middle_latents is not None:
+            assert middle_latents.shape[1:] == (6,self.style_dim)
+            latent[:,4:10] = middle_latents
+        if fine_latents is not None:
+            assert fine_latents.shape[1:] == (4,self.style_dim)
+            latent[:,10:] = fine_latents
         out = self.input(latent)
         out = self.conv1(out, latent[:, 0], noise=noise[0])
 
@@ -533,7 +545,6 @@ class Generator(nn.Module):
             out = conv1(out, latent[:, i], noise=noise1)
             out = conv2(out, latent[:, i + 1], noise=noise2)
             skip = to_rgb(out, latent[:, i + 2], skip)
-
             i += 2
 
         image = skip
