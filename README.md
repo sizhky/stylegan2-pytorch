@@ -2,7 +2,7 @@
 
 Refer to [this](https://www.youtube.com/watch?v=kSLJriaOumA) video for understanding style transfer
 
-Use the colab notebook [stylegan-2-style-transfer.ipynb](stylegan-2-style-transfer.ipynb) for complete implementation
+Use the colab notebook [stylegan-2-style-transfer.ipynb](stylegan_2_style_transfer.ipynb) for complete implementation
 
 #### Coarse Style transfer
 Transfer posture and hair  
