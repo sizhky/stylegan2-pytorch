@@ -480,7 +480,7 @@ class Generator(nn.Module):
         truncation_latent=None,
         input_is_latent=True,
         noise=None,
-        randomize_noise=True,
+        randomize_noise=False,
         coarse_latents=None,
         middle_latents=None,
         fine_latents=None
